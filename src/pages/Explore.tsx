@@ -1,0 +1,54 @@
+
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+
+const Explore = () => {
+  return (
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Ocean Background */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-deep-900 via-ocean-800 to-deep-950" />
+        <div 
+          className="absolute inset-0 opacity-60"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1518877593221-1f28583780b4?auto=format&fit=crop&w=2000&q=80')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed'
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-deep-900/90 via-deep-900/40 to-deep-900/60" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10">
+        <Navbar />
+        
+        <div className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <h1 className="text-4xl sm:text-6xl font-playfair font-bold text-white mb-6">
+              Explore the <span className="ocean-text-gradient">Ocean</span>
+            </h1>
+            <p className="text-xl text-blue-200 font-inter max-w-3xl mx-auto mb-12">
+              Discover the wonders of marine life and ocean conservation efforts around the world.
+            </p>
+            
+            <div className="glass-card p-12 max-w-2xl mx-auto">
+              <h2 className="text-2xl font-playfair font-semibold text-white mb-4">
+                Coming Soon
+              </h2>
+              <p className="text-blue-200 font-inter">
+                This page is under development. Soon you'll be able to explore interactive marine life galleries, 
+                ocean conservation initiatives, and educational content about our precious marine ecosystems.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <Footer />
+      </div>
+    </div>
+  );
+};
+
+export default Explore;
