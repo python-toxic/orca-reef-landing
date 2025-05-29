@@ -47,11 +47,19 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Floating Elements */}
+      {/* Floating Elements - Repositioned for minimalistic look */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 glass rounded-full animate-float" style={{ animationDelay: '0s' }} />
-        <div className="absolute top-1/3 right-1/4 w-24 h-24 glass rounded-full animate-float" style={{ animationDelay: '2s' }} />
-        <div className="absolute bottom-1/4 left-1/3 w-20 h-20 glass rounded-full animate-float" style={{ animationDelay: '4s' }} />
+        {/* Left side bubbles */}
+        <div className="absolute top-1/4 left-8 w-24 h-24 glass rounded-full animate-float" style={{ animationDelay: '0s' }} />
+        <div className="absolute bottom-1/3 left-16 w-16 h-16 glass rounded-full animate-float" style={{ animationDelay: '4s' }} />
+        
+        {/* Right side bubbles */}
+        <div className="absolute top-1/3 right-8 w-20 h-20 glass rounded-full animate-float" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-1/4 right-12 w-28 h-28 glass rounded-full animate-float" style={{ animationDelay: '6s' }} />
+        
+        {/* Additional corner bubbles for depth */}
+        <div className="absolute top-16 left-32 w-12 h-12 glass rounded-full animate-float" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-16 right-24 w-14 h-14 glass rounded-full animate-float" style={{ animationDelay: '3s' }} />
       </div>
     </section>
   );
