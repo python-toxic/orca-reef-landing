@@ -1,12 +1,19 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Star, Heart, ShoppingCart, Filter } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useCart } from "@/contexts/CartContext";
 
 const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isVisible, setIsVisible] = useState(false);
+  const { addToCart } = useCart();
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
 
   const products = [
     {
@@ -17,7 +24,7 @@ const Products = () => {
       rating: 4.8,
       reviews: 124,
       image: "https://images.unsplash.com/photo-1518877593221-1f28583780b4?auto=format&fit=crop&w=800&q=80",
-      category: "diving-gear",
+      category: "jewelry",
       badge: "Best Seller"
     },
     {
@@ -38,7 +45,7 @@ const Products = () => {
       rating: 4.7,
       reviews: 156,
       image: "https://images.unsplash.com/photo-1518877593221-1f28583780b4?auto=format&fit=crop&w=800&q=80",
-      category: "diving-gear"
+      category: "jewelry"
     },
     {
       id: 4,
@@ -67,14 +74,14 @@ const Products = () => {
       rating: 4.9,
       reviews: 45,
       image: "https://images.unsplash.com/photo-1518877593221-1f28583780b4?auto=format&fit=crop&w=800&q=80",
-      category: "diving-gear",
+      category: "jewelry",
       badge: "Premium"
     }
   ];
 
   const categories = [
     { id: "all", name: "All Products" },
-    { id: "diving-gear", name: "Diving Gear" },
+    { id: "jewelry", name: "Jewelry" },
     { id: "art", name: "Marine Art" },
     { id: "beachwear", name: "Beachwear" }
   ];
@@ -107,19 +114,21 @@ const Products = () => {
         {/* Page Header */}
         <div className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-4xl sm:text-6xl font-playfair font-bold text-white mb-6">
-              Ocean <span className="ocean-text-gradient">Collection</span>
-            </h1>
-            <p className="text-xl text-blue-200 font-inter max-w-3xl mx-auto">
-              Discover premium ocean-inspired products crafted for marine enthusiasts and ocean lovers.
-            </p>
+            <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+              <h1 className="text-4xl sm:text-6xl font-playfair font-bold text-white mb-6">
+                Ocean <span className="ocean-text-gradient">Collection</span>
+              </h1>
+              <p className="text-xl text-blue-200 font-inter max-w-3xl mx-auto">
+                Discover premium ocean-inspired products crafted for marine enthusiasts and ocean lovers.
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Filters */}
         <div className="px-4 sm:px-6 lg:px-8 mb-8">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-wrap gap-4 justify-center mb-8">
+            <div className={`flex flex-wrap gap-4 justify-center mb-8 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               {categories.map((category) => (
                 <button
                   key={category.id}
@@ -141,8 +150,14 @@ const Products = () => {
         <div className="px-4 sm:px-6 lg:px-8 pb-24">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+              {filteredProducts.map((product, index) => (
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  index={index}
+                  isVisible={isVisible}
+                  onAddToCart={addToCart}
+                />
               ))}
             </div>
           </div>
@@ -166,11 +181,28 @@ interface ProductCardProps {
     category: string;
     badge?: string;
   };
+  index: number;
+  isVisible: boolean;
+  onAddToCart: (item: any) => void;
 }
 
-const ProductCard = ({ product }: ProductCardProps) => {
+const ProductCard = ({ product, index, isVisible, onAddToCart }: ProductCardProps) => {
+  const handleAddToCart = () => {
+    onAddToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image
+    });
+  };
+
   return (
-    <div className="group glass-card overflow-hidden hover:transform hover:scale-105 transition-all duration-300">
+    <div 
+      className={`group glass-card overflow-hidden hover:transform hover:scale-105 transition-all duration-700 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}
+      style={{ transitionDelay: `${index * 100}ms` }}
+    >
       {/* Image */}
       <div className="relative overflow-hidden h-64">
         <img
@@ -236,7 +268,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
               </span>
             )}
           </div>
-          <button className="w-10 h-10 ocean-gradient rounded-full flex items-center justify-center hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300">
+          <button 
+            onClick={handleAddToCart}
+            className="w-10 h-10 ocean-gradient rounded-full flex items-center justify-center hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
+          >
             <ShoppingCart className="h-5 w-5 text-white" />
           </button>
         </div>

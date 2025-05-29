@@ -22,16 +22,16 @@ const Navbar = () => {
           <div className="hidden md:block">
             <div className="flex items-center space-x-6">
               <NavButton 
-                icon={ShoppingCart} 
-                text="Shop" 
-                to="/products"
-                isActive={location.pathname === "/products"}
-              />
-              <NavButton 
                 icon={Compass} 
                 text="Explore" 
                 to="/explore"
                 isActive={location.pathname === "/explore"}
+              />
+              <NavButton 
+                icon={ShoppingCart} 
+                text="Cart" 
+                to="/cart"
+                isActive={location.pathname === "/cart"}
               />
               <NavButton 
                 icon={Mail} 
