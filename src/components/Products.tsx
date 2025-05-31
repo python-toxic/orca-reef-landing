@@ -1,4 +1,3 @@
-
 import { Star, Heart, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -92,7 +91,7 @@ const Products = () => {
 
         {/* View All Button */}
         <div className="text-center">
-          <Link to="/explore">
+          <Link to="/products">
             <button className="group inline-flex items-center space-x-3 px-8 py-4 ocean-gradient rounded-full text-white font-inter font-semibold shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105">
               <span>View All Products</span>
               <ShoppingCart className="h-5 w-5 group-hover:animate-bounce" />

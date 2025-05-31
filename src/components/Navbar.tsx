@@ -1,4 +1,3 @@
-
 import { ShoppingCart, Compass, Mail } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -23,9 +22,9 @@ const Navbar = () => {
             <div className="flex items-center space-x-6">
               <NavButton 
                 icon={Compass} 
-                text="Explore" 
-                to="/explore"
-                isActive={location.pathname === "/explore"}
+                text="Products" 
+                to="/products"
+                isActive={location.pathname === "/products" || location.pathname === "/explore"}
               />
               <NavButton 
                 icon={ShoppingCart} 
