@@ -7,19 +7,24 @@ import { useCart } from "@/contexts/CartContext";
 
 const Explore = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
+  const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
   const { addToCart } = useCart();
 
   useEffect(() => {
     setIsVisible(true);
-    
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const toggleLike = (productId: number) => {
+    setLikedProducts(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(productId)) {
+        newSet.delete(productId);
+      } else {
+        newSet.add(productId);
+      }
+      return newSet;
+    });
+  };
 
   // Mock user preferences and browsing history for recommendations
   const userPreferences = {
@@ -129,7 +134,7 @@ const Explore = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Ocean Background */}
+      {/* Ocean Background - Fixed */}
       <div className="fixed inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-deep-900 via-ocean-800 to-deep-950" />
         <div 
@@ -138,8 +143,7 @@ const Explore = () => {
             backgroundImage: `url('https://images.unsplash.com/photo-1518877593221-1f28583780b4?auto=format&fit=crop&w=2000&q=80')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundAttachment: 'fixed',
-            transform: `translateY(${scrollY * 0.5}px)`
+            backgroundAttachment: 'fixed'
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-deep-900/90 via-deep-900/40 to-deep-900/60" />
@@ -176,6 +180,8 @@ const Explore = () => {
               isVisible={isVisible}
               delay={200}
               onAddToCart={addToCart}
+              likedProducts={likedProducts}
+              onToggleLike={toggleLike}
             />
 
             {/* Trending Section */}
@@ -187,6 +193,8 @@ const Explore = () => {
               isVisible={isVisible}
               delay={400}
               onAddToCart={addToCart}
+              likedProducts={likedProducts}
+              onToggleLike={toggleLike}
             />
 
             {/* Community Favorites */}
@@ -198,6 +206,8 @@ const Explore = () => {
               isVisible={isVisible}
               delay={600}
               onAddToCart={addToCart}
+              likedProducts={likedProducts}
+              onToggleLike={toggleLike}
             />
 
           </div>
@@ -217,6 +227,8 @@ interface RecommendationSectionProps {
   isVisible: boolean;
   delay: number;
   onAddToCart: (item: any) => void;
+  likedProducts: Set<number>;
+  onToggleLike: (id: number) => void;
 }
 
 const RecommendationSection = ({ 
@@ -226,7 +238,9 @@ const RecommendationSection = ({
   products, 
   isVisible, 
   delay, 
-  onAddToCart 
+  onAddToCart,
+  likedProducts,
+  onToggleLike
 }: RecommendationSectionProps) => {
   return (
     <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{ transitionDelay: `${delay}ms` }}>
@@ -245,6 +259,8 @@ const RecommendationSection = ({
             product={product}
             index={index}
             onAddToCart={onAddToCart}
+            isLiked={likedProducts.has(product.id)}
+            onToggleLike={() => onToggleLike(product.id)}
           />
         ))}
       </div>
@@ -256,9 +272,11 @@ interface ProductCardProps {
   product: any;
   index: number;
   onAddToCart: (item: any) => void;
+  isLiked: boolean;
+  onToggleLike: () => void;
 }
 
-const ProductCard = ({ product, index, onAddToCart }: ProductCardProps) => {
+const ProductCard = ({ product, index, onAddToCart, isLiked, onToggleLike }: ProductCardProps) => {
   const handleAddToCart = () => {
     onAddToCart({
       id: product.id,
@@ -277,8 +295,17 @@ const ProductCard = ({ product, index, onAddToCart }: ProductCardProps) => {
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
         
-        <button className="absolute top-4 right-4 w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300">
-          <Heart className="h-5 w-5 text-white hover:text-red-300 transition-colors duration-300" />
+        <button 
+          onClick={onToggleLike}
+          className="absolute top-4 right-4 w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300"
+        >
+          <Heart 
+            className={`h-5 w-5 transition-colors duration-300 ${
+              isLiked 
+                ? "text-red-400 fill-red-400" 
+                : "text-white hover:text-red-300"
+            }`} 
+          />
         </button>
 
         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">

@@ -1,7 +1,23 @@
 
 import { Star, Heart, ShoppingCart } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const Products = () => {
+  const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
+
+  const toggleLike = (productId: number) => {
+    setLikedProducts(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(productId)) {
+        newSet.delete(productId);
+      } else {
+        newSet.add(productId);
+      }
+      return newSet;
+    });
+  };
+
   const products = [
     {
       id: 1,
@@ -46,16 +62,23 @@ const Products = () => {
         {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {products.map((product) => (
-            <ProductCard key={product.id} {...product} />
+            <ProductCard 
+              key={product.id} 
+              {...product} 
+              isLiked={likedProducts.has(product.id)}
+              onToggleLike={() => toggleLike(product.id)}
+            />
           ))}
         </div>
 
         {/* View All Button */}
         <div className="text-center">
-          <button className="group inline-flex items-center space-x-3 px-8 py-4 ocean-gradient rounded-full text-white font-inter font-semibold shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105">
-            <span>View All Products</span>
-            <ShoppingCart className="h-5 w-5 group-hover:animate-bounce" />
-          </button>
+          <Link to="/explore">
+            <button className="group inline-flex items-center space-x-3 px-8 py-4 ocean-gradient rounded-full text-white font-inter font-semibold shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105">
+              <span>View All Products</span>
+              <ShoppingCart className="h-5 w-5 group-hover:animate-bounce" />
+            </button>
+          </Link>
         </div>
       </div>
     </section>
@@ -69,9 +92,11 @@ interface ProductCardProps {
   rating: number;
   image: string;
   category: string;
+  isLiked: boolean;
+  onToggleLike: () => void;
 }
 
-const ProductCard = ({ name, price, rating, image, category }: ProductCardProps) => {
+const ProductCard = ({ name, price, rating, image, category, isLiked, onToggleLike }: ProductCardProps) => {
   return (
     <div className="group glass-card overflow-hidden hover:transform hover:scale-105 transition-all duration-300">
       {/* Image */}
@@ -88,8 +113,17 @@ const ProductCard = ({ name, price, rating, image, category }: ProductCardProps)
         </div>
 
         {/* Wishlist Button */}
-        <button className="absolute top-4 right-4 w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300">
-          <Heart className="h-5 w-5 text-white hover:text-red-300 transition-colors duration-300" />
+        <button 
+          onClick={onToggleLike}
+          className="absolute top-4 right-4 w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300"
+        >
+          <Heart 
+            className={`h-5 w-5 transition-colors duration-300 ${
+              isLiked 
+                ? "text-red-400 fill-red-400" 
+                : "text-white hover:text-red-300"
+            }`} 
+          />
         </button>
 
         {/* Quick Add Overlay */}
