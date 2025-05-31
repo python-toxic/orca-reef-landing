@@ -5,15 +5,44 @@ import { Star, Heart, ShoppingCart, Filter } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isVisible, setIsVisible] = useState(false);
+  const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
   const { addToCart } = useCart();
+  const { toast } = useToast();
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  const toggleLike = (productId: number) => {
+    setLikedProducts(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(productId)) {
+        newSet.delete(productId);
+      } else {
+        newSet.add(productId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleAddToCart = (product: any) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image
+    });
+    
+    toast({
+      title: "Added to cart!",
+      description: `${product.name} has been added to your cart.`,
+    });
+  };
 
   const products = [
     {
@@ -156,7 +185,9 @@ const Products = () => {
                   product={product} 
                   index={index}
                   isVisible={isVisible}
-                  onAddToCart={addToCart}
+                  isLiked={likedProducts.has(product.id)}
+                  onToggleLike={() => toggleLike(product.id)}
+                  onAddToCart={() => handleAddToCart(product)}
                 />
               ))}
             </div>
@@ -183,17 +214,22 @@ interface ProductCardProps {
   };
   index: number;
   isVisible: boolean;
-  onAddToCart: (item: any) => void;
+  isLiked: boolean;
+  onToggleLike: () => void;
+  onAddToCart: () => void;
 }
 
-const ProductCard = ({ product, index, isVisible, onAddToCart }: ProductCardProps) => {
-  const handleAddToCart = () => {
-    onAddToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image
-    });
+const ProductCard = ({ product, index, isVisible, isLiked, onToggleLike, onAddToCart }: ProductCardProps) => {
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleAddToCart = async () => {
+    setIsAdding(true);
+    onAddToCart();
+    
+    // Reset animation after delay
+    setTimeout(() => {
+      setIsAdding(false);
+    }, 600);
   };
 
   return (
@@ -219,8 +255,17 @@ const ProductCard = ({ product, index, isVisible, onAddToCart }: ProductCardProp
         )}
 
         {/* Wishlist Button */}
-        <button className="absolute top-4 right-4 w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300">
-          <Heart className="h-5 w-5 text-white hover:text-red-300 transition-colors duration-300" />
+        <button 
+          onClick={onToggleLike}
+          className="absolute top-4 right-4 w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300 transform hover:scale-110"
+        >
+          <Heart 
+            className={`h-5 w-5 transition-all duration-300 ${
+              isLiked 
+                ? "text-red-500 fill-red-500 scale-110" 
+                : "text-white hover:text-red-300"
+            }`} 
+          />
         </button>
 
         {/* Quick View Overlay */}
@@ -270,9 +315,13 @@ const ProductCard = ({ product, index, isVisible, onAddToCart }: ProductCardProp
           </div>
           <button 
             onClick={handleAddToCart}
-            className="w-10 h-10 ocean-gradient rounded-full flex items-center justify-center hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
+            className={`w-10 h-10 ocean-gradient rounded-full flex items-center justify-center hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 ${
+              isAdding ? 'animate-pulse scale-110' : 'hover:scale-110'
+            }`}
           >
-            <ShoppingCart className="h-5 w-5 text-white" />
+            <ShoppingCart className={`h-5 w-5 text-white transition-transform duration-300 ${
+              isAdding ? 'animate-bounce' : ''
+            }`} />
           </button>
         </div>
       </div>

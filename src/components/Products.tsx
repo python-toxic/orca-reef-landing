@@ -2,9 +2,13 @@
 import { Star, Heart, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Products = () => {
   const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
+  const { addToCart } = useCart();
+  const { toast } = useToast();
 
   const toggleLike = (productId: number) => {
     setLikedProducts(prev => {
@@ -15,6 +19,20 @@ const Products = () => {
         newSet.add(productId);
       }
       return newSet;
+    });
+  };
+
+  const handleAddToCart = (product: any) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: parseFloat(product.price.replace('$', '')),
+      image: product.image
+    });
+    
+    toast({
+      title: "Added to cart!",
+      description: `${product.name} has been added to your cart.`,
     });
   };
 
@@ -67,6 +85,7 @@ const Products = () => {
               {...product} 
               isLiked={likedProducts.has(product.id)}
               onToggleLike={() => toggleLike(product.id)}
+              onAddToCart={() => handleAddToCart(product)}
             />
           ))}
         </div>
@@ -94,9 +113,22 @@ interface ProductCardProps {
   category: string;
   isLiked: boolean;
   onToggleLike: () => void;
+  onAddToCart: () => void;
 }
 
-const ProductCard = ({ name, price, rating, image, category, isLiked, onToggleLike }: ProductCardProps) => {
+const ProductCard = ({ name, price, rating, image, category, isLiked, onToggleLike, onAddToCart }: ProductCardProps) => {
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleAddToCart = async () => {
+    setIsAdding(true);
+    onAddToCart();
+    
+    // Reset animation after delay
+    setTimeout(() => {
+      setIsAdding(false);
+    }, 600);
+  };
+
   return (
     <div className="group glass-card overflow-hidden hover:transform hover:scale-105 transition-all duration-300">
       {/* Image */}
@@ -115,12 +147,12 @@ const ProductCard = ({ name, price, rating, image, category, isLiked, onToggleLi
         {/* Wishlist Button */}
         <button 
           onClick={onToggleLike}
-          className="absolute top-4 right-4 w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300"
+          className="absolute top-4 right-4 w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300 transform hover:scale-110"
         >
           <Heart 
-            className={`h-5 w-5 transition-colors duration-300 ${
+            className={`h-5 w-5 transition-all duration-300 ${
               isLiked 
-                ? "text-red-400 fill-red-400" 
+                ? "text-red-500 fill-red-500 scale-110" 
                 : "text-white hover:text-red-300"
             }`} 
           />
@@ -128,7 +160,10 @@ const ProductCard = ({ name, price, rating, image, category, isLiked, onToggleLi
 
         {/* Quick Add Overlay */}
         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <button className="px-6 py-2 ocean-gradient rounded-full text-white font-inter font-semibold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+          <button 
+            onClick={handleAddToCart}
+            className="px-6 py-2 ocean-gradient rounded-full text-white font-inter font-semibold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+          >
             Quick Add
           </button>
         </div>
@@ -160,8 +195,15 @@ const ProductCard = ({ name, price, rating, image, category, isLiked, onToggleLi
         {/* Price */}
         <div className="flex items-center justify-between">
           <span className="text-2xl font-playfair font-bold text-white">{price}</span>
-          <button className="w-10 h-10 ocean-gradient rounded-full flex items-center justify-center hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300">
-            <ShoppingCart className="h-5 w-5 text-white" />
+          <button 
+            onClick={handleAddToCart}
+            className={`w-10 h-10 ocean-gradient rounded-full flex items-center justify-center hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 ${
+              isAdding ? 'animate-pulse scale-110' : 'hover:scale-110'
+            }`}
+          >
+            <ShoppingCart className={`h-5 w-5 text-white transition-transform duration-300 ${
+              isAdding ? 'animate-bounce' : ''
+            }`} />
           </button>
         </div>
       </div>

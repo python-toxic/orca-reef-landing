@@ -4,11 +4,13 @@ import { Star, Heart, ShoppingCart, TrendingUp, Users, Sparkles } from "lucide-r
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Explore = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
   const { addToCart } = useCart();
+  const { toast } = useToast();
 
   useEffect(() => {
     setIsVisible(true);
@@ -23,6 +25,20 @@ const Explore = () => {
         newSet.add(productId);
       }
       return newSet;
+    });
+  };
+
+  const handleAddToCart = (product: any) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image
+    });
+    
+    toast({
+      title: "Added to cart!",
+      description: `${product.name} has been added to your cart.`,
     });
   };
 
@@ -179,7 +195,7 @@ const Explore = () => {
               products={recommendations.forYou}
               isVisible={isVisible}
               delay={200}
-              onAddToCart={addToCart}
+              onAddToCart={handleAddToCart}
               likedProducts={likedProducts}
               onToggleLike={toggleLike}
             />
@@ -192,7 +208,7 @@ const Explore = () => {
               products={recommendations.trending}
               isVisible={isVisible}
               delay={400}
-              onAddToCart={addToCart}
+              onAddToCart={handleAddToCart}
               likedProducts={likedProducts}
               onToggleLike={toggleLike}
             />
@@ -205,7 +221,7 @@ const Explore = () => {
               products={allProducts.filter(p => p.rating >= 4.8)}
               isVisible={isVisible}
               delay={600}
-              onAddToCart={addToCart}
+              onAddToCart={handleAddToCart}
               likedProducts={likedProducts}
               onToggleLike={toggleLike}
             />
@@ -277,13 +293,16 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, index, onAddToCart, isLiked, onToggleLike }: ProductCardProps) => {
-  const handleAddToCart = () => {
-    onAddToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image
-    });
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleAddToCart = async () => {
+    setIsAdding(true);
+    onAddToCart(product);
+    
+    // Reset animation after delay
+    setTimeout(() => {
+      setIsAdding(false);
+    }, 600);
   };
 
   return (
@@ -297,12 +316,12 @@ const ProductCard = ({ product, index, onAddToCart, isLiked, onToggleLike }: Pro
         
         <button 
           onClick={onToggleLike}
-          className="absolute top-4 right-4 w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300"
+          className="absolute top-4 right-4 w-10 h-10 glass-dark rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300 transform hover:scale-110"
         >
           <Heart 
-            className={`h-5 w-5 transition-colors duration-300 ${
+            className={`h-5 w-5 transition-all duration-300 ${
               isLiked 
-                ? "text-red-400 fill-red-400" 
+                ? "text-red-500 fill-red-500 scale-110" 
                 : "text-white hover:text-red-300"
             }`} 
           />
@@ -311,9 +330,11 @@ const ProductCard = ({ product, index, onAddToCart, isLiked, onToggleLike }: Pro
         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
           <button 
             onClick={handleAddToCart}
-            className="px-6 py-2 ocean-gradient rounded-full text-white font-inter font-semibold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+            className={`px-6 py-2 ocean-gradient rounded-full text-white font-inter font-semibold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 ${
+              isAdding ? 'animate-pulse scale-110' : ''
+            }`}
           >
-            Add to Cart
+            {isAdding ? 'Adding...' : 'Add to Cart'}
           </button>
         </div>
       </div>
