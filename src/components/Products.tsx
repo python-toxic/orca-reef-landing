@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { products } from "@/data/products";
 
 const Products = () => {
   const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
@@ -25,7 +26,7 @@ const Products = () => {
     addToCart({
       id: product.id,
       name: product.name,
-      price: parseFloat(product.price.replace('$', '')),
+      price: product.price,
       image: product.image
     });
     
@@ -35,32 +36,8 @@ const Products = () => {
     });
   };
 
-  const products = [
-    {
-      id: 1,
-      name: "Whale Song Pendant",
-      price: "$89.99",
-      rating: 4.9,
-      image: "https://images.unsplash.com/photo-1518877593221-1f28583780b4?auto=format&fit=crop&w=800&q=80",
-      category: "Jewelry"
-    },
-    {
-      id: 2,
-      name: "Ocean Waves Print",
-      price: "$45.99",
-      rating: 4.8,
-      image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=800&q=80",
-      category: "Art"
-    },
-    {
-      id: 3,
-      name: "Coral Reef Earrings",
-      price: "$65.99",
-      rating: 5.0,
-      image: "https://images.unsplash.com/photo-1518877593221-1f28583780b4?auto=format&fit=crop&w=800&q=80",
-      category: "Jewelry"
-    }
-  ];
+  // Show only first 3 products for featured section
+  const featuredProducts = products.slice(0, 3);
 
   return (
     <section className="relative py-24 px-4 sm:px-6 lg:px-8">
@@ -78,7 +55,7 @@ const Products = () => {
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {products.map((product) => (
+          {featuredProducts.map((product) => (
             <ProductCard 
               key={product.id} 
               {...product} 

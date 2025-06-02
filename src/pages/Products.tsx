@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Star, Heart, ShoppingCart, Filter } from "lucide-react";
@@ -6,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { products, categories } from "@/data/products";
 
 const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -43,77 +43,6 @@ const Products = () => {
       description: `${product.name} has been added to your cart.`,
     });
   };
-
-  const products = [
-    {
-      id: 1,
-      name: "Professional Diving Mask",
-      price: 89.99,
-      originalPrice: 120.00,
-      rating: 4.8,
-      reviews: 124,
-      image: "https://images.unsplash.com/photo-1518877593221-1f28583780b4?auto=format&fit=crop&w=800&q=80",
-      category: "jewelry",
-      badge: "Best Seller"
-    },
-    {
-      id: 2,
-      name: "Ocean Waves Canvas Art",
-      price: 45.99,
-      rating: 4.9,
-      reviews: 89,
-      image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=800&q=80",
-      category: "art",
-      badge: "New"
-    },
-    {
-      id: 3,
-      name: "Coral Reef Swimming Fins",
-      price: 65.99,
-      originalPrice: 85.00,
-      rating: 4.7,
-      reviews: 156,
-      image: "https://images.unsplash.com/photo-1518877593221-1f28583780b4?auto=format&fit=crop&w=800&q=80",
-      category: "jewelry"
-    },
-    {
-      id: 4,
-      name: "Marine Life Photography Print",
-      price: 35.99,
-      rating: 4.6,
-      reviews: 67,
-      image: "https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?auto=format&fit=crop&w=800&q=80",
-      category: "art"
-    },
-    {
-      id: 5,
-      name: "Ocean Breeze Beach Towel",
-      price: 29.99,
-      rating: 4.5,
-      reviews: 203,
-      image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=800&q=80",
-      category: "beachwear",
-      badge: "Sale"
-    },
-    {
-      id: 6,
-      name: "Deep Sea Explorer Wetsuit",
-      price: 199.99,
-      originalPrice: 259.99,
-      rating: 4.9,
-      reviews: 45,
-      image: "https://images.unsplash.com/photo-1518877593221-1f28583780b4?auto=format&fit=crop&w=800&q=80",
-      category: "jewelry",
-      badge: "Premium"
-    }
-  ];
-
-  const categories = [
-    { id: "all", name: "All Products" },
-    { id: "jewelry", name: "Jewelry" },
-    { id: "art", name: "Marine Art" },
-    { id: "beachwear", name: "Beachwear" }
-  ];
 
   const filteredProducts = selectedCategory === "all" 
     ? products 
