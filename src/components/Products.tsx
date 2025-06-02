@@ -1,3 +1,4 @@
+
 import { Star, Heart, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -58,7 +59,12 @@ const Products = () => {
           {featuredProducts.map((product) => (
             <ProductCard 
               key={product.id} 
-              {...product} 
+              id={product.id}
+              name={product.name}
+              price={product.price}
+              rating={product.rating}
+              image={product.image}
+              category={product.category}
               isLiked={likedProducts.has(product.id)}
               onToggleLike={() => toggleLike(product.id)}
               onAddToCart={() => handleAddToCart(product)}
@@ -83,7 +89,7 @@ const Products = () => {
 interface ProductCardProps {
   id: number;
   name: string;
-  price: string;
+  price: number;
   rating: number;
   image: string;
   category: string;
@@ -170,7 +176,7 @@ const ProductCard = ({ name, price, rating, image, category, isLiked, onToggleLi
 
         {/* Price */}
         <div className="flex items-center justify-between">
-          <span className="text-2xl font-playfair font-bold text-white">{price}</span>
+          <span className="text-2xl font-playfair font-bold text-white">${price}</span>
           <button 
             onClick={handleAddToCart}
             className={`w-10 h-10 ocean-gradient rounded-full flex items-center justify-center hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 ${
